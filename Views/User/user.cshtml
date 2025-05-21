@@ -1,0 +1,81 @@
+﻿@model UserTasksViewModel
+
+<h2>Agenda de @Model.Name</h2>
+
+<ul id="tasks-list">
+    @foreach (var task in Model.Tasks)
+    {
+        <li>
+            <strong>@task.Title</strong><br />
+
+            @if (!string.IsNullOrWhiteSpace(task.Description))
+            {
+                <em>@task.Description</em>
+
+                <br />
+            }
+
+            @if (task.DateStart.HasValue)
+            {
+                <span>Início: @task.DateStart.Value.ToString("dd/MM/yyyy HH:mm")</span>
+
+                <br />
+            }
+
+            @if (task.DateFinish.HasValue)
+            {
+                <span>Fim: @task.DateFinish.Value.ToString("dd/MM/yyyy HH:mm")</span>
+            }
+        </li>
+    }
+</ul>
+
+<hr />
+
+<h3>Adicionar nova tarefa</h3>
+<form id="add-task-form" method="post">
+    <input type="hidden" name="UserId" value="@Model.Id" />
+
+    <input type="text" name="Title" placeholder="Título da tarefa" required />
+    <input type="text" name="Description" placeholder="Descrição" />
+    <input type="datetime-local" name="DateStart" placeholder="Data de início" />
+    <input type="datetime-local" name="DateFinish" placeholder="Data de fim" />
+    <input type="submit" value="Adicionar" />
+</form>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(function () {
+            $('#add-task-form').submit(function (event) {
+                event.preventDefault();
+
+                var form = $(this);
+                var data = form.serialize();
+
+                $.post('@Url.Action("AdicionarTarefa")', data)
+                    .done(function (newTask) {
+                        let html = `<li>
+                                    <strong>${newTask.title}</strong><br />`;
+
+                        if (newTask.description)
+                            html += `<em>${newTask.description}</em><br />`;
+
+                        if (newTask.dateStart)
+                            html += `Início: ${new Date(newTask.dateStart).toLocaleString()}<br />`;
+
+                        if (newTask.dateFinish)
+                            html += `Fim: ${new Date(newTask.dateFinish).toLocaleString()}`;
+
+                        html += '</li>';
+
+                        $('#tasks-list').append(html);
+                        form.trigger("reset");
+                    })
+                    .fail(function () {
+                        alert('Erro ao adicionar a tarefa.');
+                    });
+            });
+        });
+    </script>
+}

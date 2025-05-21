@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.34928.147
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolHub", "ToolHub.csproj", "{02838164-87B2-4590-BCFE-F97EE315C9FB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{02838164-87B2-4590-BCFE-F97EE315C9FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{02838164-87B2-4590-BCFE-F97EE315C9FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{02838164-87B2-4590-BCFE-F97EE315C9FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{02838164-87B2-4590-BCFE-F97EE315C9FB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0B7D2F14-7708-4594-B4A9-3A1F78471A9F}
+	EndGlobalSection
+EndGlobal

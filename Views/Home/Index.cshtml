@@ -1,0 +1,53 @@
+﻿@model CreateUserViewModel
+
+@{
+    ViewData["Title"] = "Agenda";
+}
+
+<h2>Create New User</h2>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<form asp-controller="Home" asp-action="Index" method="post">
+    <div class="form-group">
+        <label asp-for="Name" class="control-label"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-2">Create</button>
+</form>
+@if (Model?.ExistingUsers != null && Model.ExistingUsers.Any())
+{
+    <form asp-controller="User" asp-action="User" method="get">
+        <div class="form-group mt-3">
+            <label for="usersDropdown">Select a user:</label>
+            <select id="usersDropdown" name="name" class="form-select">
+                @foreach (var user in Model.ExistingUsers)
+                {
+                    <option value="@user.Name">@user.Name</option>
+                }
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary mt-2">Acessar</button>
+    </form>
+
+
+
+
+
+}
+else
+{
+    <p>No users found.</p>
+}
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

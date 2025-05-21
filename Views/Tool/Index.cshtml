@@ -1,0 +1,195 @@
+﻿@model ToolHub.InfraStrcuture.CreateToolViewModel
+@{
+    ViewData["Title"] = "Gerenciar Ferramentas";
+}
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+    body {
+        font-family: 'Inter', sans-serif;
+    }
+</style>
+
+<div class="container mx-auto p-6 bg-gray-50 min-h-screen rounded-lg shadow-lg">
+    <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Gerenciar Ferramentas</h2>
+
+    {{-- Seção para adicionar nova ferramenta --}}
+    <div class="mb-8 p-6 bg-white rounded-lg shadow-md">
+        <h3 class="text-2xl font-semibold text-gray-700 mb-4">Adicionar Nova Ferramenta</h3>
+        <form id="add-tool-form" method="post" action="@Url.Action("Create", "Tool")" class="space-y-4">
+            <div class="flex flex-col">
+                <label for="toolName" class="text-gray-700 font-medium mb-1">Nome da Ferramenta:</label>
+                <input type="text" id="toolName" name="Name" placeholder="Nome da nova ferramenta" required
+                       class="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200 ease-in-out" />
+                <span asp-validation-for="Name" class="text-red-500 text-sm mt-1"></span>
+            </div>
+            <button type="submit"
+                    class="w-full bg-blue-600 text-white py-3 px-6 rounded-md shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-300 ease-in-out transform hover:scale-105">
+                Criar Nova Ferramenta
+            </button>
+        </form>
+        <div id="add-tool-message" class="mt-4 p-3 rounded-md text-center hidden"></div>
+    </div>
+
+    {{-- NOVA SEÇÃO: Adicionar Novo Tópico a uma Ferramenta Existente --}}
+    <div class="mb-8 p-6 bg-white rounded-lg shadow-md">
+        <h3 class="text-2xl font-semibold text-gray-700 mb-4">Adicionar Novo Tópico</h3>
+        <form id="add-topic-form" method="post" action="@Url.Action("AdicionarTopico", "Tool")" class="space-y-4">
+            <div class="flex flex-col">
+                <label for="selectTool" class="text-gray-700 font-medium mb-1">Selecionar Ferramenta:</label>
+                <select id="selectTool" name="toolId" required
+                        class="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200 ease-in-out">
+                    <option value="">-- Selecione uma ferramenta --</option>
+                    @if (Model.ExistingTools != null && Model.ExistingTools.Any())
+                    {
+                        @foreach (var tool in Model.ExistingTools)
+                        {
+                            <option value="@tool.Id">@tool.Name</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="flex flex-col">
+                <label for="topicTitle" class="text-gray-700 font-medium mb-1">Título do Tópico:</label>
+                <input type="text" id="topicTitle" name="Title" placeholder="Título do tópico" required
+                       class="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200 ease-in-out" />
+            </div>
+            <div class="flex flex-col">
+                <label for="topicText" class="text-gray-700 font-medium mb-1">Texto do Tópico:</label>
+                <textarea id="topicText" name="Text" placeholder="Conteúdo do tópico" rows="3"
+                          class="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200 ease-in-out"></textarea>
+            </div>
+            <button type="submit"
+                    class="w-full bg-green-600 text-white py-3 px-6 rounded-md shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition duration-300 ease-in-out transform hover:scale-105">
+                Adicionar Tópico
+            </button>
+        </form>
+        <div id="add-topic-message" class="mt-4 p-3 rounded-md text-center hidden"></div>
+    </div>
+
+    {{-- Seção para exibir ferramentas existentes --}}
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <h3 class="text-2xl font-semibold text-gray-700 mb-4">Ferramentas Existentes</h3>
+        @if (Model.ExistingTools != null && Model.ExistingTools.Any())
+        {
+            <ul id="tools-list" class="space-y-4">
+                @foreach (var tool in Model.ExistingTools)
+                {
+                    <li class="p-4 border border-gray-200 rounded-md bg-gray-50 shadow-sm">
+                        <strong class="text-lg text-blue-700">@tool.Name</strong>
+                        <br />
+                        <span class="text-gray-600 text-sm">ID: @tool.Id</span>
+                        @if (tool.Topics != null && tool.Topics.Any())
+                        {
+                            <div class="mt-2">
+                                <h4 class="font-medium text-gray-600">Tópicos:</h4>
+                                <ul class="list-disc list-inside ml-4 text-gray-500">
+                                    @foreach (var topic in tool.Topics)
+                                    {
+                                        <li><strong>@topic.Title</strong>: @topic.Text</li>
+                                    }
+                                </ul>
+                            </div>
+                        }
+                        else
+                        {
+                            <p class="text-gray-500 text-sm mt-2">Nenhum tópico para esta ferramenta.</p>
+                        }
+                    </li>
+                }
+            </ul>
+        }
+        else
+        {
+            <p class="text-gray-600 text-center">Nenhuma ferramenta encontrada.</p>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(function () {
+            // Lidar com a submissão do formulário de criação de ferramenta via AJAX
+            $('#add-tool-form').submit(function (event) {
+                event.preventDefault();
+
+                var form = $(this);
+                var url = form.attr('action');
+                var data = form.serialize();
+
+                $('#add-tool-message').removeClass('hidden text-red-500 text-green-500').addClass('text-blue-500').text('Criando ferramenta...').show();
+
+                $.post(url, data)
+                    .done(function (response) {
+                        location.reload(); // Recarrega a página para exibir a nova ferramenta
+                    })
+                    .fail(function (jqXHR, textStatus, errorThrown) {
+                        console.error('Erro ao adicionar a ferramenta:', textStatus, errorThrown, jqXHR.responseText);
+                        let errorMessage = 'Erro ao criar ferramenta. Por favor, tente novamente.';
+                        if (jqXHR.responseJSON && jqXHR.responseJSON.errors) {
+                            errorMessage = Object.values(jqXHR.responseJSON.errors).flat().join('<br />');
+                        } else if (jqXHR.responseText) {
+                            errorMessage = jqXHR.responseText;
+                        }
+                        $('#add-tool-message').removeClass('text-blue-500').addClass('text-red-500').html(errorMessage).show();
+                    });
+            });
+
+            // Lidar com a submissão do formulário de adição de tópico via AJAX
+            $('#add-topic-form').submit(function (event) {
+                event.preventDefault();
+
+                var form = $(this);
+                var url = form.attr('action');
+                var data = form.serialize();
+
+                $('#add-topic-message').removeClass('hidden text-red-500 text-green-500').addClass('text-blue-500').text('Adicionando tópico...').show();
+
+                $.post(url, data)
+                    .done(function (newTopic) {
+                        // O controller AdicionarTopico retorna o novo tópico em JSON.
+                        // Podemos adicionar o tópico dinamicamente sem recarregar a página.
+                        if (newTopic && newTopic.id) {
+                            // Encontra a ferramenta correta na lista e adiciona o novo tópico
+                            // Isso é um exemplo simples e pode precisar de mais robustez para atualizações complexas
+                            let toolId = form.find('select[name="toolId"]').val();
+                            let toolListItem = $(`#tools-list li:has(span:contains("ID: ${toolId}"))`);
+
+                            if (toolListItem.length > 0) {
+                                let topicsList = toolListItem.find('ul.list-disc');
+                                if (topicsList.length === 0) {
+                                    // Se não houver lista de tópicos, cria uma
+                                    toolListItem.find('p.text-gray-500').remove(); // Remove a mensagem "Nenhum tópico..."
+                                    toolListItem.append(`
+                                                <div class="mt-2">
+                                                    <h4 class="font-medium text-gray-600">Tópicos:</h4>
+                                                    <ul class="list-disc list-inside ml-4 text-gray-500"></ul>
+                                                </div>
+                                            `);
+                                    topicsList = toolListItem.find('ul.list-disc');
+                                }
+                                topicsList.append(`<li><strong>${newTopic.title}</strong>: ${newTopic.text}</li>`);
+                            }
+
+                            form.trigger("reset"); // Limpa os campos do formulário
+                            $('#add-topic-message').removeClass('text-blue-500').addClass('text-green-500').text('Tópico adicionado com sucesso!').show();
+                        } else {
+                            $('#add-topic-message').removeClass('text-blue-500').addClass('text-red-500').text('Erro ao adicionar tópico: Resposta inválida.').show();
+                        }
+                    })
+                    .fail(function (jqXHR, textStatus, errorThrown) {
+                        console.error('Erro ao adicionar o tópico:', textStatus, errorThrown, jqXHR.responseText);
+                        let errorMessage = 'Erro ao adicionar tópico. Por favor, tente novamente.';
+                        if (jqXHR.responseJSON && jqXHR.responseJSON.errors) {
+                            errorMessage = Object.values(jqXHR.responseJSON.errors).flat().join('<br />');
+                        } else if (jqXHR.responseText) {
+                            errorMessage = jqXHR.responseText;
+                        }
+                        $('#add-topic-message').removeClass('text-blue-500').addClass('text-red-500').html(errorMessage).show();
+                    });
+            });
+        });
+    </script>
+}
